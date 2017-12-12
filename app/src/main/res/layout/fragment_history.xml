@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/label_checks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/selected_currencies"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/checks_field"
+                android:layout_width="match_parent"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:text="1"
+                app:layout_constraintTop_toBottomOf="@id/label_checks"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/label__period"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/choosed_period"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@id/checks_field"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/period_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="2"
+                app:layout_constraintTop_toBottomOf="@id/label__period"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/label_date_from_to"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="8dp"
+                android:textSize="12sp"
+                android:text="@string/start_end_dates"
+                app:layout_constraintTop_toBottomOf="@id/period_field"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/date_from_to_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="3"
+                app:layout_constraintTop_toBottomOf="@id/label_date_from_to"
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:id="@+id/empty_history_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:text="@string/empty_history"
+                android:visibility="gone"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/historyRecyclerView"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/date_from_to_field" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</FrameLayout>

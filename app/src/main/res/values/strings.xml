@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">ExchangerApp</string>
+    <string name="exchange">Обмен</string>
+    <string name="history">История</string>
+    <string name="trends">Аналитика</string>
+    <string name="available_currencies">Доступные валюты</string>
+    <string name="top_currency">Валюта перевода:</string>
+    <string name="error">Произошла ошибка.</string>
+    <string name="action_refresh">обновить</string>
+    <string name="repeat">повторить</string>
+    <string name="all_time">За всё время</string>
+    <string name="week">За неделю</string>
+    <string name="month">За месяц</string>
+    <string name="period">За период</string>
+    <string name="apply">Применить</string>
+    <string name="two_weeks">за 2 недели</string>
+    <string name="selected_currencies">Выбранные валюты:</string>
+    <string name="choosed_period">Выбранный период:</string>
+    <string name="start_end_dates">Начальная и конечная даты:</string>
+    <string name="empty_history">Пока что нет совершенных обменов.</string>
+    <string name="star">star</string>
+</resources>

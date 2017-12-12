@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/exchange_button"
+        android:enabled="true"
+        android:title="@string/exchange"
+        android:icon="@drawable/exchange"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/history_button"
+        android:enabled="true"
+        android:title="@string/history"
+        android:icon="@drawable/history"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/trends_button"
+        android:enabled="true"
+        android:title="@string/trends"
+        android:icon="@drawable/trend"
+        app:showAsAction="ifRoom" />
+
+
+</menu>
