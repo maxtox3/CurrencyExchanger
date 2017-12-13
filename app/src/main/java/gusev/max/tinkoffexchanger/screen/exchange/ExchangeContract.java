@@ -7,17 +7,19 @@ public interface ExchangeContract {
 
     interface View {
 
-        void showRates(ExchangeVO rates);
+        //void showRates(String baseFrom, String baseTo, Double amountFrom, Double amountTo);
 
         void showLoading(Boolean show);
 
         void enableFields(Boolean enable);
 
-        void showDialog();
+        void showDialog(ExchangeVO exchangeVO);
 
         void showSuccess();
 
         ExchangeVO getExchangeVO();
+
+        void showRatesAfterLoading(String baseFrom, String baseTo, Double amountFrom, Double amountTo);
     }
 
     interface Presenter extends BasePresenter {
@@ -28,6 +30,8 @@ public interface ExchangeContract {
 
         void exchange(ExchangeVO viewObject);
 
-        void onFieldsChange(ExchangeVO viewObject);
+        void onFieldsChange(ExchangeVO viewObject, Boolean isFrom);
+
+        void cacheExchange(ExchangeVO viewObject);
     }
 }

@@ -4,6 +4,7 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.util.Log;
 
 import gusev.max.tinkoffexchanger.data.model.dto.Currency;
 import gusev.max.tinkoffexchanger.data.model.vo.TrendsVO;
@@ -43,7 +44,7 @@ public class TrendsPresenter implements TrendsContract.Presenter, LifecycleObser
 
     @Override
     public void getData() {
-        trendsView.showLoading();
+        trendsView.showLoading(true);
         disposeBag.add(dataRepository.getTrends()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -52,14 +53,14 @@ public class TrendsPresenter implements TrendsContract.Presenter, LifecycleObser
 
     @Override
     public void onPeriodSelect(String period) {
-        trendsView.showLoading();
+        trendsView.showLoading(true);
         dataRepository.setTrendsPeriod(period);
         getData();
     }
 
     @Override
     public void onCurrencySelect(Currency currency) {
-        trendsView.showLoading();
+        trendsView.showLoading(true);
         dataRepository.setSelectedTrendsCurrency(currency.getBase());
         getData();
     }
@@ -69,9 +70,12 @@ public class TrendsPresenter implements TrendsContract.Presenter, LifecycleObser
         trendsView.setPeriod(viewObject.getPeriod());
         trendsView.setSelectedCurrency(viewObject.getBaseOfSelectedCurrency());
         trendsView.setRates(viewObject.getRates());
-        trendsView.hideLoading();
+        trendsView.showLoading(false);
     }
 
     private void handleError(Throwable error) {
+        trendsView.showLoading(false);
+        Log.i("trends", error.getLocalizedMessage());
+        trendsView.showError();
     }
 }

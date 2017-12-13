@@ -5,7 +5,6 @@ import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
 
-import gusev.max.tinkoffexchanger.data.model.dto.Exchange;
 import gusev.max.tinkoffexchanger.data.model.vo.ExchangeVO;
 import gusev.max.tinkoffexchanger.data.repository.Repository;
 import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
@@ -54,21 +53,6 @@ public class ExchangePresenter implements ExchangeContract.Presenter, LifecycleO
         );
     }
 
-    private void getRatesWithRefresh() {
-        exchangeView.showLoading(true);
-        exchangeView.enableFields(false);
-
-        disposeBag.add(dataRepository.getRatesOrRefresh()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(exchangeVO -> {
-                    exchangeView.showRates(exchangeVO);
-                    exchangeView.showLoading(false);
-                    exchangeView.enableFields(true);
-                    exchangeView.showDialog();
-                }, this::handleError));
-    }
-
     @Override
     public void onExchangeButtonClick(ExchangeVO viewObject) {
         boolean notFresh = dataRepository.checkRatesFreshness();
@@ -84,28 +68,62 @@ public class ExchangePresenter implements ExchangeContract.Presenter, LifecycleO
         disposeBag.add(dataRepository.exchange(viewObject)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(() -> exchangeView.showSuccess())
+                .doOnComplete(() -> {
+                    dataRepository.cacheExchange(null);
+                    exchangeView.showSuccess();
+                })
                 .doOnError(this::handleError)
                 .subscribe()
         );
     }
 
     @Override
-    public void onFieldsChange(ExchangeVO viewObject) {
+    public void onFieldsChange(ExchangeVO viewObject, Boolean isFrom) {
         dataRepository.cacheExchange(viewObject);
+
+        if (dataRepository.checkRatesFreshness()) {
+            dataRepository.cacheExchange(null);
+            exchangeView.enableFields(false);
+            exchangeView.showLoading(true);
+            dataRepository.getRatesWithRefresh()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::handleReturnedData, this::handleError);
+        }
+    }
+
+    @Override
+    public void cacheExchange(ExchangeVO viewObject) {
+        dataRepository.cacheExchange(viewObject);
+    }
+
+    private void getRatesWithRefresh() {
+        exchangeView.showLoading(true);
+        exchangeView.enableFields(false);
+
+        disposeBag.add(dataRepository.getRatesOrRefresh()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(exchangeVO -> {
+                    dataRepository.cacheExchange(exchangeVO);
+                    exchangeView.showLoading(false);
+                    exchangeView.enableFields(true);
+                    exchangeView.showDialog(exchangeVO);
+                }, this::handleError));
     }
 
     private void handleReturnedData(ExchangeVO rates) {
         exchangeView.enableFields(true);
         exchangeView.showLoading(false);
-        exchangeView.showRates(rates);
+        exchangeView.showRatesAfterLoading(
+                rates.getBaseFrom(),
+                rates.getBaseTo(),
+                rates.getAmountFrom(),
+                rates.getAmountTo());
     }
 
     private void handleError(Throwable error) {
         exchangeView.showLoading(false);
     }
 
-    public void setExchange(Exchange exchange) {
-        dataRepository.setExchange(null);
-    }
 }

@@ -25,7 +25,7 @@ public class TrendsService implements TrendsServiceProtocol {
         if(anchoredCurrency.getBase() == null){
             return currencyDao.getCurrenciesWithoutEuro().toObservable();
         } else {
-            return currencyDao.getCurrenciesWithoutEuro()
+            return currencyDao.getCurrenciesWithoutEuroAndAnchored(anchoredCurrency.getBase())
                     .map(currencies -> {
                         List<Currency> currenciesForTrends = new ArrayList<>();
                         currenciesForTrends.add(anchoredCurrency);
@@ -84,7 +84,7 @@ public class TrendsService implements TrendsServiceProtocol {
             number = 30;
         }
 
-        String[] result = new String[number];
+        String[] dates = new String[number];
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date current = new Date(System.currentTimeMillis());
@@ -92,10 +92,10 @@ public class TrendsService implements TrendsServiceProtocol {
         calendar.setTime(current);
 
         for (int i = 0; i < number; i++) {
-            result[i] = df.format(current);
+            dates[i] = df.format(current);
             calendar.add(Calendar.DATE, -1);
             current = calendar.getTime();
         }
-        return result;
+        return dates;
     }
 }

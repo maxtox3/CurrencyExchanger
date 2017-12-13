@@ -50,6 +50,7 @@ public class CurrencyFragment extends Fragment implements CurrencyContract.View,
 
     private CurrencyPresenter presenter;
     private CurrencyAdapter adapter;
+    boolean isFirstTime = true;
 
     @Nullable
     @Override
@@ -93,7 +94,10 @@ public class CurrencyFragment extends Fragment implements CurrencyContract.View,
 
     @Override
     public void showCurrencies(CurrencyVO currencies) {
-        TransitionManager.beginDelayedTransition(container);
+        if(isFirstTime){
+            TransitionManager.beginDelayedTransition(container);
+            isFirstTime = false;
+        }
         retry.setVisibility(View.GONE);
         allCurrenciesLabel.setVisibility(View.VISIBLE);
         adapter.setCurrencies(currencies.getCurrencyList());
@@ -115,7 +119,6 @@ public class CurrencyFragment extends Fragment implements CurrencyContract.View,
 
     @Override
     public void showLoading(Boolean show) {
-        TransitionManager.beginDelayedTransition(container);
         if(show) {
             loadingView.setVisibility(View.VISIBLE);
         } else {

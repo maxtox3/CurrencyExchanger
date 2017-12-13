@@ -19,22 +19,22 @@ public interface CurrencyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Currency currency);
 
-    @Query("DELETE FROM currency")
-    void deleteAll();
-
     @Query("SELECT * FROM currency WHERE base = :base")
     Currency getCurrency(String base);
 
     @Query("SELECT * FROM currency WHERE base = :base")
     Flowable<Currency> getCurrencyFlowable(String base);
 
-    @Query("SELECT * FROM currency WHERE base != :base ORDER BY liked DESC")
+    @Query("SELECT * FROM (SELECT * FROM currency WHERE base != :base ORDER BY lastUsed DESC) ORDER BY liked DESC")
     Flowable<List<Currency>> getCurrenciesWithoutAnchored(String base);
 
     @Query("SELECT * FROM (SELECT * FROM currency WHERE liked = 1 AND base != :pressed ORDER BY liked) ORDER BY lastUsed")
     Flowable<List<Currency>> getLikedCurrenciesWithoutPressed(String pressed);
 
-    @Query("SELECT * FROM (SELECT * FROM currency WHERE base != "+ "'EUR'" +" ORDER BY base) ORDER BY liked DESC")
+    @Query("SELECT * FROM (SELECT * FROM currency WHERE base != :base AND base != 'EUR' ORDER BY lastUsed DESC) ORDER BY liked DESC")
+    Flowable<List<Currency>> getCurrenciesWithoutEuroAndAnchored(String base);
+
+    @Query("SELECT * FROM (SELECT * FROM currency WHERE base != 'EUR' ORDER BY lastUsed DESC) ORDER BY liked DESC")
     Flowable<List<Currency>> getCurrenciesWithoutEuro();
 
     @Query("UPDATE currency SET lastUsed = :time WHERE base = :baseOfCurrency")

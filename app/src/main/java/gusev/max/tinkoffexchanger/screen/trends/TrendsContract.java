@@ -9,9 +9,7 @@ class TrendsContract {
 
     interface View {
 
-        void showLoading();
-
-        void hideLoading();
+        void showLoading(Boolean show);
 
         void showCurrencies(List<Currency> currencies);
 
@@ -20,6 +18,8 @@ class TrendsContract {
         void setSelectedCurrency(String baseOfSelectedCurrency);
 
         void setRates(List<Float> rates);
+
+        void showError();
     }
 
     interface Presenter extends BasePresenter {

@@ -17,10 +17,9 @@ import io.reactivex.schedulers.Schedulers;
 public class CurrencyPresenter implements CurrencyContract.Presenter, LifecycleObserver {
 
     private CurrencyContract.View currencyView;
-
     private CompositeDisposable disposeBag;
-
     private Repository dataRepository = RepositoryProvider.provideRepository();
+    private boolean firstTime = true;
 
     CurrencyPresenter(CurrencyContract.View view) {
         this.currencyView = view;
@@ -35,7 +34,14 @@ public class CurrencyPresenter implements CurrencyContract.Presenter, LifecycleO
     @Override
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onAttach() {
-        getCurrencies();
+        if(firstTime){
+            firstTime = false;
+            getCurrencies();
+            refreshCurrencies();
+        } else {
+            getCurrencies();
+        }
+
     }
 
     @Override

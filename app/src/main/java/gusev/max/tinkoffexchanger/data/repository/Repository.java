@@ -27,6 +27,8 @@ public interface Repository {
 
     Observable<ExchangeVO> getRates();
 
+    Observable<ExchangeVO> getRatesWithRefresh();
+
     Observable<ExchangeVO> getRatesOrRefresh();
 
     Boolean checkRatesFreshness();

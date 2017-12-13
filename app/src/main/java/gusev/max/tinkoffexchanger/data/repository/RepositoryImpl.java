@@ -76,6 +76,11 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
+    public Observable<ExchangeVO> getRatesWithRefresh() {
+        return refreshData().andThen(getRates());
+    }
+
+    @Override
     public Observable<ExchangeVO> getRatesOrRefresh() {
         if (checkRatesFreshness()) {
             return refreshData().andThen(localDataSource.getRates());
@@ -144,7 +149,6 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public Observable<TrendsVO> getTrends() {
-
         return Observable.zip(
                 localDataSource.getCurrenciesForTrends()
                         .doOnNext(currencies -> {

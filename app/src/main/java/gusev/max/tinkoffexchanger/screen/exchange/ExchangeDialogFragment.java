@@ -37,7 +37,7 @@ public class ExchangeDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Актуальный курс: ")
                 .setMessage(buildMessage())
-                .setPositiveButton("Обменять", (dialog, id) -> ((ExchangeActivity) getActivity()).okClicked())
+                .setPositiveButton("Обменять", (dialog, id) -> ((ExchangeActivity) getActivity()).okClicked(viewObject))
                 .setNegativeButton("Отмена", (dialog, id) -> ((ExchangeActivity) getActivity()).cancelClicked())
                 .setCancelable(true);
 

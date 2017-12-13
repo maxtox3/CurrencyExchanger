@@ -3,7 +3,6 @@ package gusev.max.tinkoffexchanger.screen.exchange;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.view.MenuItem;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,30 +33,45 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
     EditText amountTo;
     @BindView(R.id.exchange_button)
     ProgressButton exchangeBtn;
-    
+
     private final String DIALOG = "dialog";
     private final String EXCHANGED = "Exchanged!";
     private ExchangePresenter presenter;
-    private Double multiplier;
+    private boolean blockTo;
+    private boolean blockFrom;
+    private double multiplier;
 
     @OnTextChanged(value = R.id.amount_from, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void fromAmountChanged(Editable editable) {
-        if (!editable.toString().equals("")
-                && amountFrom.hasFocus()
-                && !editable.toString().equals(".")) {
-            amountTo.setText(formatFloat(Double.parseDouble(editable.toString()) * multiplier));
-            presenter.onFieldsChange(getExchangeVO());
+        if (editable.toString().isEmpty()) {
+            blockFields(true);
+            amountTo.setText("0.0");
+            amountFrom.setText("0.0");
+            blockFields(false);
+        }
+
+        if (!blockFrom & amountFrom.hasFocus() & !editable.toString().isEmpty()) {
+            blockTo = true;
+            amountTo.setText(Double.parseDouble(editable.toString()) * multiplier + "");
+            blockTo = false;
+            presenter.onFieldsChange(getExchangeVO(), true);
         }
     }
 
     @OnTextChanged(value = R.id.amount_to, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void toAmountChanged(Editable editable) {
-        if (!editable.toString().equals("")
-                && Double.parseDouble(editable.toString()) != 0
-                && amountTo.hasFocus()
-                && !editable.toString().equals(".")) {
-            amountFrom.setText(formatFloat(Double.parseDouble(editable.toString()) / multiplier));
-            presenter.onFieldsChange(getExchangeVO());
+        if (editable.toString().isEmpty()) {
+            blockFields(true);
+            amountTo.setText("0.0");
+            amountFrom.setText("0.0");
+            blockFields(false);
+        }
+
+        if (!blockTo & !editable.toString().isEmpty()) {
+            blockFrom = true;
+            amountTo.setText(Double.parseDouble(editable.toString()) * multiplier + "");
+            blockFrom = false;
+            presenter.onFieldsChange(getExchangeVO(), true);
         }
     }
 
@@ -73,8 +88,8 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
 
     @Override
     public void onBackPressed() {
+        presenter.cacheExchange(null);
         super.onBackPressed();
-
     }
 
     @Override
@@ -86,29 +101,33 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         presenter = new ExchangePresenter(this);
+//
+//        TextView.OnEditorActionListener onEditorActionListener = (v, actionId, event) -> {
+//            if (actionId == EditorInfo.IME_ACTION_GO) {
+//
+//                InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                v.clearFocus();
+//            }
+//            return false;
+//        };
+//
+//        amountFrom.setOnEditorActionListener(onEditorActionListener);
+//        amountTo.setOnEditorActionListener(onEditorActionListener);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                finish();
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void showRates(ExchangeVO rates) {
-        multiplier = rates.getAmountTo();
-        fromLabel.setText(rates.getBaseFrom());
-        toLabel.setText(rates.getBaseTo());
-        amountFrom.setText(rates.getAmountFrom().toString());
-        amountTo.setText(formatFloat(rates.getAmountTo()));
-    }
-
-    @Override
     public void showLoading(Boolean show) {
-        if(show) {
+        if (show) {
             exchangeBtn.showProgress();
         } else {
             exchangeBtn.hideProgress();
@@ -117,7 +136,7 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
 
     @Override
     public void enableFields(Boolean enable) {
-        if(enable){
+        if (enable) {
             amountFrom.setEnabled(true);
             amountTo.setEnabled(true);
         } else {
@@ -127,9 +146,10 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
     }
 
     @Override
-    public void showDialog() {
-        DialogFragment newFragment = ExchangeDialogFragment.newInstance(getExchangeVO());
-        newFragment.show(getSupportFragmentManager(), DIALOG);
+    public void showDialog(ExchangeVO exchangeVO) {
+        ExchangeDialogFragment
+                .newInstance(exchangeVO)
+                .show(getSupportFragmentManager(), DIALOG);
     }
 
     @Override
@@ -147,15 +167,35 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
         );
     }
 
-    public void okClicked(){
-        presenter.exchange(getExchangeVO());
+    @Override
+    public void showRatesAfterLoading(String baseFrom, String baseTo, Double valueFrom, Double valueTo) {
+        blockFields(true);
+        fromLabel.setText(baseFrom);
+        toLabel.setText(baseTo);
+        multiplier = valueTo;
+        amountFrom.setText(formatFloatToString(valueFrom));
+        amountTo.setText(formatFloatToString(valueTo));
+        blockFields(false);
+    }
+
+    private void blockFields(Boolean block){
+        blockTo = block;
+        blockFrom = block;
+    }
+
+    public void okClicked(ExchangeVO exchangeVO) {
+        presenter.exchange(exchangeVO);
     }
 
     public void cancelClicked() {
         presenter.getRates();
     }
 
-    private String formatFloat(Double number) {
-        return new DecimalFormat("#.###").format(number);
+    private String formatFloatToString(Double number) {
+        DecimalFormat df = new DecimalFormat("#.###");
+        DecimalFormatSymbols sfs = new DecimalFormatSymbols();
+        sfs.setDecimalSeparator('.');
+        df.setDecimalFormatSymbols(sfs);
+        return df.format(number);
     }
 }

@@ -274,8 +274,8 @@ public class FiltersActivity extends AppCompatActivity implements FiltersContrac
                 adapter.getCurrencies(),
                 adapter.getChecked(),
                 getPeriodType(),
-                dateFrom.getText().toString(),
-                dateTo.getText().toString()
+                dateTo.getText().toString(),
+                dateFrom.getText().toString()
         );
     }
 

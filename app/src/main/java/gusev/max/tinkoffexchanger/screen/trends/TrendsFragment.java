@@ -66,39 +66,6 @@ public class TrendsFragment extends Fragment implements TrendsContract.View {
         return view;
     }
 
-    private void setupWidgets() {
-        layoutManager = new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            switch (checkedId) {
-                case R.id.week_trends_radio:
-                    presenter.onPeriodSelect(WEEK);
-                    break;
-
-                case R.id.two_weeks_trends_radio:
-                    presenter.onPeriodSelect(TWO_WEEKS);
-                    break;
-
-                case R.id.month_trends_radio:
-                    presenter.onPeriodSelect(MONTH);
-                    break;
-            }
-        });
-
-        setupRecycler(new ArrayList<>());
-    }
-
-    private void setupRecycler(List<Currency> currencies) {
-        adapter = new TrendsAdapter(currencies,
-                (currency, position) -> {
-                    adapter.select(position);
-                    presenter.onCurrencySelect(currency);
-                });
-        recyclerView.setAdapter(adapter);
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -108,7 +75,6 @@ public class TrendsFragment extends Fragment implements TrendsContract.View {
 
     @Override
     public void showCurrencies(List<Currency> currencies) {
-        TransitionManager.beginDelayedTransition(recyclerView);
         setupRecycler(currencies);
     }
 
@@ -141,15 +107,53 @@ public class TrendsFragment extends Fragment implements TrendsContract.View {
     }
 
     @Override
-    public void showLoading() {
-        progressBar.setVisibility(View.VISIBLE);
-        lineChart.setVisibility(View.INVISIBLE);
+    public void showError() {
+
     }
 
     @Override
-    public void hideLoading() {
-        lineChart.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
+    public void showLoading(Boolean show) {
+        if(show){
+            progressBar.setVisibility(View.VISIBLE);
+            lineChart.setVisibility(View.INVISIBLE);
+        } else {
+            lineChart.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void setupWidgets() {
+        layoutManager = new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.week_trends_radio:
+                    presenter.onPeriodSelect(WEEK);
+                    break;
+
+                case R.id.two_weeks_trends_radio:
+                    presenter.onPeriodSelect(TWO_WEEKS);
+                    break;
+
+                case R.id.month_trends_radio:
+                    presenter.onPeriodSelect(MONTH);
+                    break;
+            }
+        });
+
+        setupRecycler(new ArrayList<>());
+    }
+
+    private void setupRecycler(List<Currency> currencies) {
+        adapter = new TrendsAdapter(currencies,
+                (currency, position) -> {
+                    adapter.select(position);
+                    presenter.onCurrencySelect(currency);
+                });
+        recyclerView.setAdapter(adapter);
     }
 
     private void buildCharts(List<Float> rates) {
