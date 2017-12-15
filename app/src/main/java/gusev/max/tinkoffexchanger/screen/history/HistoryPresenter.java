@@ -10,7 +10,6 @@ import java.util.List;
 import gusev.max.tinkoffexchanger.data.model.vo.ExchangeVO;
 import gusev.max.tinkoffexchanger.data.model.vo.FilterVO;
 import gusev.max.tinkoffexchanger.data.repository.Repository;
-import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -29,12 +28,13 @@ public class HistoryPresenter implements HistoryContract.Presenter, LifecycleObs
     private final String PERIOD = "period";
     private final String PERIOD_RUS = "За период";
 
-    private Repository dataRepository = RepositoryProvider.provideRepository();
+    private Repository dataRepository;
     private HistoryContract.View historyView;
     private CompositeDisposable disposeBag;
 
-    HistoryPresenter(HistoryContract.View view) {
+    HistoryPresenter(HistoryContract.View view, Repository repository) {
         this.historyView = view;
+        this.dataRepository = repository;
 
         if (view instanceof LifecycleOwner) {
             ((LifecycleOwner) view).getLifecycle().addObserver(this);

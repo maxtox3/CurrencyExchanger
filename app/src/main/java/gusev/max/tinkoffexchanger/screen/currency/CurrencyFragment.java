@@ -24,7 +24,10 @@ import butterknife.OnClick;
 import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.dto.Currency;
 import gusev.max.tinkoffexchanger.data.model.vo.CurrencyVO;
+import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 import gusev.max.tinkoffexchanger.screen.exchange.ExchangeActivity;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class CurrencyFragment extends Fragment implements CurrencyContract.View, CurrencyViewHolder.CurrencyListener {
 
@@ -65,7 +68,7 @@ public class CurrencyFragment extends Fragment implements CurrencyContract.View,
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        presenter = new CurrencyPresenter(this);
+        presenter = new CurrencyPresenter(this, RepositoryProvider.provideRepository(), Schedulers.io(), AndroidSchedulers.mainThread());
         if(view != null) {
             return view;
         }

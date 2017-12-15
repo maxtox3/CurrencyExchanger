@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.dto.Currency;
+import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 
 public class TrendsFragment extends Fragment implements TrendsContract.View {
 
@@ -61,7 +62,7 @@ public class TrendsFragment extends Fragment implements TrendsContract.View {
 
         setupWidgets();
 
-        presenter = new TrendsPresenter(this);
+        presenter = new TrendsPresenter(this, RepositoryProvider.provideRepository());
 
         return view;
     }

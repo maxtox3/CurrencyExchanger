@@ -19,6 +19,7 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.vo.ExchangeVO;
+import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 import gusev.max.tinkoffexchanger.screen.widgets.ProgressButton;
 
 public class ExchangeActivity extends AppCompatActivity implements ExchangeContract.View {
@@ -67,9 +68,9 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
             blockFields(false);
         }
 
-        if (!blockTo & !editable.toString().isEmpty()) {
+        if (!blockTo & amountTo.hasFocus() &  !editable.toString().isEmpty()) {
             blockFrom = true;
-            amountTo.setText(Double.parseDouble(editable.toString()) * multiplier + "");
+            amountFrom.setText(Double.parseDouble(editable.toString()) / multiplier + "");
             blockFrom = false;
             presenter.onFieldsChange(getExchangeVO(), true);
         }
@@ -100,20 +101,7 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        presenter = new ExchangePresenter(this);
-//
-//        TextView.OnEditorActionListener onEditorActionListener = (v, actionId, event) -> {
-//            if (actionId == EditorInfo.IME_ACTION_GO) {
-//
-//                InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-//                v.clearFocus();
-//            }
-//            return false;
-//        };
-//
-//        amountFrom.setOnEditorActionListener(onEditorActionListener);
-//        amountTo.setOnEditorActionListener(onEditorActionListener);
+        presenter = new ExchangePresenter(this, RepositoryProvider.provideRepository());
     }
 
     @Override

@@ -20,8 +20,9 @@ public class TrendsPresenter implements TrendsContract.Presenter, LifecycleObser
     private TrendsContract.View trendsView;
     private CompositeDisposable disposeBag;
 
-    TrendsPresenter(TrendsContract.View view) {
+    TrendsPresenter(TrendsContract.View view, Repository repository) {
         this.trendsView = view;
+        this.dataRepository = repository;
 
         if (view instanceof LifecycleOwner) {
             ((LifecycleOwner) view).getLifecycle().addObserver(this);

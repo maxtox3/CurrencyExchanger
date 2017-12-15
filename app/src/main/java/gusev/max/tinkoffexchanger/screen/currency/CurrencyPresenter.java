@@ -9,20 +9,23 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import gusev.max.tinkoffexchanger.data.model.dto.Currency;
 import gusev.max.tinkoffexchanger.data.model.vo.CurrencyVO;
 import gusev.max.tinkoffexchanger.data.repository.Repository;
-import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class CurrencyPresenter implements CurrencyContract.Presenter, LifecycleObserver {
 
     private CurrencyContract.View currencyView;
     private CompositeDisposable disposeBag;
-    private Repository dataRepository = RepositoryProvider.provideRepository();
+    private Repository dataRepository;
+    private Scheduler ioScheduler;
+    private Scheduler uiScheduler;
     private boolean firstTime = true;
 
-    CurrencyPresenter(CurrencyContract.View view) {
+    public CurrencyPresenter(CurrencyContract.View view, Repository repository, Scheduler io, Scheduler ui) {
         this.currencyView = view;
+        this.dataRepository = repository;
+        this.ioScheduler = io;
+        this.uiScheduler = ui;
 
         if (view instanceof LifecycleOwner) {
             ((LifecycleOwner) view).getLifecycle().addObserver(this);
@@ -54,8 +57,8 @@ public class CurrencyPresenter implements CurrencyContract.Presenter, LifecycleO
     public void getCurrencies() {
         currencyView.showLoading(true);
         disposeBag.add(dataRepository.getCachedCurrencies()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
                 .subscribe(this::handleReturnedData, this::handleError));
     }
 
@@ -63,8 +66,8 @@ public class CurrencyPresenter implements CurrencyContract.Presenter, LifecycleO
     public void refreshCurrencies() {
         currencyView.showLoading(true);
         disposeBag.add(dataRepository.loadCurrencies()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
                 .subscribe(this::handleReturnedData, this::handleError));
     }
 
@@ -73,8 +76,8 @@ public class CurrencyPresenter implements CurrencyContract.Presenter, LifecycleO
         currency.changeLiked();
 
         disposeBag.add(dataRepository.updateCurrency(currency)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
                 .doOnComplete(this::getCurrencies)
                 .subscribe());
 
@@ -84,8 +87,8 @@ public class CurrencyPresenter implements CurrencyContract.Presenter, LifecycleO
     public void onCurrencyLongCLick(Currency currency) {
 
         disposeBag.add(dataRepository.setAnchoredCurrency(currency)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
                 .doOnComplete(this::getCurrencies)
                 .subscribe());
     }

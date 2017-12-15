@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.vo.FilterVO;
+import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 
 public class FiltersActivity extends AppCompatActivity implements FiltersContract.View, FiltersAdapter.CurrencyListener {
     
@@ -109,7 +110,7 @@ public class FiltersActivity extends AppCompatActivity implements FiltersContrac
 
         setupWidgets();
 
-        presenter = new FiltersPresenter(this);
+        presenter = new FiltersPresenter(this, RepositoryProvider.provideRepository());
     }
 
     private void setupWidgets() {

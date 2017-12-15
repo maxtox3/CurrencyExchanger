@@ -9,19 +9,19 @@ import java.util.Set;
 
 import gusev.max.tinkoffexchanger.data.model.vo.FilterVO;
 import gusev.max.tinkoffexchanger.data.repository.Repository;
-import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class FiltersPresenter implements FiltersContract.Presenter, LifecycleObserver {
 
-    private Repository dataRepository = RepositoryProvider.provideRepository();
+    private Repository dataRepository;
     private FiltersContract.View filtersView;
     private CompositeDisposable disposeBag;
 
-    FiltersPresenter(FiltersContract.View view) {
+    FiltersPresenter(FiltersContract.View view, Repository repository) {
         this.filtersView = view;
+        this.dataRepository = repository;
 
         if (view instanceof LifecycleOwner) {
             ((LifecycleOwner) view).getLifecycle().addObserver(this);

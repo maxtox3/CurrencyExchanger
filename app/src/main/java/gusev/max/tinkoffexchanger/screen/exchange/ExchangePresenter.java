@@ -7,19 +7,19 @@ import android.arch.lifecycle.OnLifecycleEvent;
 
 import gusev.max.tinkoffexchanger.data.model.vo.ExchangeVO;
 import gusev.max.tinkoffexchanger.data.repository.Repository;
-import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class ExchangePresenter implements ExchangeContract.Presenter, LifecycleObserver {
 
-    private Repository dataRepository = RepositoryProvider.provideRepository();
+    private Repository dataRepository;
     private ExchangeContract.View exchangeView;
     private CompositeDisposable disposeBag;
 
-    ExchangePresenter(ExchangeContract.View view) {
+    ExchangePresenter(ExchangeContract.View view, Repository repository) {
         this.exchangeView = view;
+        this.dataRepository = repository;
 
         if (view instanceof LifecycleOwner) {
             ((LifecycleOwner) view).getLifecycle().addObserver(this);
@@ -85,10 +85,10 @@ public class ExchangePresenter implements ExchangeContract.Presenter, LifecycleO
             dataRepository.cacheExchange(null);
             exchangeView.enableFields(false);
             exchangeView.showLoading(true);
-            dataRepository.getRatesWithRefresh()
+            disposeBag.add(dataRepository.getRatesWithRefresh()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::handleReturnedData, this::handleError);
+                    .subscribe(this::handleReturnedData, this::handleError));
         }
     }
 

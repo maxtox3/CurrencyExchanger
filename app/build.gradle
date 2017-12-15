@@ -67,6 +67,11 @@ dependencies {
     compile "android.arch.lifecycle:extensions:$archVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$archVersion"
 
+    // Local Unit Test
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
+    testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
+
     // Stetho
     implementation "com.facebook.stetho:stetho:$stethoVersion"
 

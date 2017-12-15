@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.vo.ExchangeVO;
+import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 import gusev.max.tinkoffexchanger.screen.filters.FiltersActivity;
 
 public class HistoryFragment extends Fragment implements HistoryContract.View {
@@ -62,7 +63,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        presenter = new HistoryPresenter(this);
+        presenter = new HistoryPresenter(this, RepositoryProvider.provideRepository());
         return view;
     }
 
