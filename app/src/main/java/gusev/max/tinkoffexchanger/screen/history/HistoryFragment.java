@@ -25,6 +25,8 @@ import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.vo.ExchangeVO;
 import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 import gusev.max.tinkoffexchanger.screen.filters.FiltersActivity;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class HistoryFragment extends Fragment implements HistoryContract.View {
 
@@ -63,7 +65,7 @@ public class HistoryFragment extends Fragment implements HistoryContract.View {
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        presenter = new HistoryPresenter(this, RepositoryProvider.provideRepository());
+        presenter = new HistoryPresenter(this, RepositoryProvider.provideRepository(), Schedulers.io(), AndroidSchedulers.mainThread());
         return view;
     }
 

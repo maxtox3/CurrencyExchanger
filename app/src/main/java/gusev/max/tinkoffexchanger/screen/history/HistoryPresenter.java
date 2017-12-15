@@ -10,9 +10,8 @@ import java.util.List;
 import gusev.max.tinkoffexchanger.data.model.vo.ExchangeVO;
 import gusev.max.tinkoffexchanger.data.model.vo.FilterVO;
 import gusev.max.tinkoffexchanger.data.repository.Repository;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class HistoryPresenter implements HistoryContract.Presenter, LifecycleObserver {
 
@@ -31,10 +30,14 @@ public class HistoryPresenter implements HistoryContract.Presenter, LifecycleObs
     private Repository dataRepository;
     private HistoryContract.View historyView;
     private CompositeDisposable disposeBag;
+    private Scheduler ioScheduler;
+    private Scheduler uiScheduler;
 
-    HistoryPresenter(HistoryContract.View view, Repository repository) {
+    public HistoryPresenter(HistoryContract.View view, Repository repository, Scheduler io, Scheduler ui) {
         this.historyView = view;
         this.dataRepository = repository;
+        this.ioScheduler = io;
+        this.uiScheduler = ui;
 
         if (view instanceof LifecycleOwner) {
             ((LifecycleOwner) view).getLifecycle().addObserver(this);
@@ -59,16 +62,16 @@ public class HistoryPresenter implements HistoryContract.Presenter, LifecycleObs
     @Override
     public void getHistory() {
         disposeBag.add(dataRepository.getHistory()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
                 .subscribe(this::handleReturnedData, this::handleError));
     }
 
     @Override
     public void getFilter() {
         disposeBag.add(dataRepository.getFilter()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
                 .subscribe(this::handleReturnedFilter, this::handleError));
     }
 

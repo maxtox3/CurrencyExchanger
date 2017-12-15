@@ -25,6 +25,8 @@ import butterknife.OnClick;
 import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.vo.FilterVO;
 import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class FiltersActivity extends AppCompatActivity implements FiltersContract.View, FiltersAdapter.CurrencyListener {
     
@@ -110,7 +112,7 @@ public class FiltersActivity extends AppCompatActivity implements FiltersContrac
 
         setupWidgets();
 
-        presenter = new FiltersPresenter(this, RepositoryProvider.provideRepository());
+        presenter = new FiltersPresenter(this, RepositoryProvider.provideRepository(), Schedulers.io(), AndroidSchedulers.mainThread());
     }
 
     private void setupWidgets() {

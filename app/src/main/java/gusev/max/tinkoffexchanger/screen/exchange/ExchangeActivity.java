@@ -21,6 +21,8 @@ import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.vo.ExchangeVO;
 import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
 import gusev.max.tinkoffexchanger.screen.widgets.ProgressButton;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class ExchangeActivity extends AppCompatActivity implements ExchangeContract.View {
 
@@ -51,7 +53,9 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
             blockFields(false);
         }
 
-        if (!blockFrom & amountFrom.hasFocus() & !editable.toString().isEmpty()) {
+        if (!blockFrom & amountFrom.hasFocus()
+                & !editable.toString().isEmpty()
+                & !editable.toString().equals(".")) {
             blockTo = true;
             amountTo.setText(Double.parseDouble(editable.toString()) * multiplier + "");
             blockTo = false;
@@ -68,7 +72,9 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
             blockFields(false);
         }
 
-        if (!blockTo & amountTo.hasFocus() &  !editable.toString().isEmpty()) {
+        if (!blockTo & amountTo.hasFocus()
+                & !editable.toString().isEmpty()
+                & !editable.toString().equals(".")) {
             blockFrom = true;
             amountFrom.setText(Double.parseDouble(editable.toString()) / multiplier + "");
             blockFrom = false;
@@ -101,7 +107,7 @@ public class ExchangeActivity extends AppCompatActivity implements ExchangeContr
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        presenter = new ExchangePresenter(this, RepositoryProvider.provideRepository());
+        presenter = new ExchangePresenter(this, RepositoryProvider.provideRepository(), Schedulers.io(), AndroidSchedulers.mainThread());
     }
 
     @Override

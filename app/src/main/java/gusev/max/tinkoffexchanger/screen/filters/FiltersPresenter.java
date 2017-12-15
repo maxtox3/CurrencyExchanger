@@ -9,19 +9,22 @@ import java.util.Set;
 
 import gusev.max.tinkoffexchanger.data.model.vo.FilterVO;
 import gusev.max.tinkoffexchanger.data.repository.Repository;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class FiltersPresenter implements FiltersContract.Presenter, LifecycleObserver {
 
     private Repository dataRepository;
     private FiltersContract.View filtersView;
     private CompositeDisposable disposeBag;
+    private Scheduler ioScheduler;
+    private Scheduler uiScheduler;
 
-    FiltersPresenter(FiltersContract.View view, Repository repository) {
+    public FiltersPresenter(FiltersContract.View view, Repository repository, Scheduler io, Scheduler ui) {
         this.filtersView = view;
         this.dataRepository = repository;
+        this.ioScheduler = io;
+        this.uiScheduler = ui;
 
         if (view instanceof LifecycleOwner) {
             ((LifecycleOwner) view).getLifecycle().addObserver(this);
@@ -45,9 +48,9 @@ public class FiltersPresenter implements FiltersContract.Presenter, LifecycleObs
     @Override
     public void getData() {
         disposeBag.add(dataRepository.getFilter()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(this::handleReturnedData, this::handleError));
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
+                .subscribe(this::handleReturnedData, this::handleError));
     }
 
     @Override
@@ -70,13 +73,13 @@ public class FiltersPresenter implements FiltersContract.Presenter, LifecycleObs
         dataRepository.saveFilter(viewObject);
     }
 
-    private void handleReturnedData(FilterVO viewObject){
+    private void handleReturnedData(FilterVO viewObject) {
         filtersView.showCurrencies(viewObject.getCurrencies(), viewObject.getChecks());
         filtersView.showPeriod(viewObject.getPeriodType());
         filtersView.showDateEdges(viewObject.getDateFrom(), viewObject.getDateTo());
     }
 
-    private void handleError(Throwable error){
+    private void handleError(Throwable error) {
 
     }
 }

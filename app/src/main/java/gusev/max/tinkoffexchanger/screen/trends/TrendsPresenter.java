@@ -10,19 +10,22 @@ import gusev.max.tinkoffexchanger.data.model.dto.Currency;
 import gusev.max.tinkoffexchanger.data.model.vo.TrendsVO;
 import gusev.max.tinkoffexchanger.data.repository.Repository;
 import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class TrendsPresenter implements TrendsContract.Presenter, LifecycleObserver {
 
     private Repository dataRepository = RepositoryProvider.provideRepository();
     private TrendsContract.View trendsView;
     private CompositeDisposable disposeBag;
+    private Scheduler ioScheduler;
+    private Scheduler uiScheduler;
 
-    TrendsPresenter(TrendsContract.View view, Repository repository) {
+    public TrendsPresenter(TrendsContract.View view, Repository repository, Scheduler io, Scheduler ui) {
         this.trendsView = view;
         this.dataRepository = repository;
+        this.ioScheduler = io;
+        this.uiScheduler = ui;
 
         if (view instanceof LifecycleOwner) {
             ((LifecycleOwner) view).getLifecycle().addObserver(this);
@@ -47,8 +50,8 @@ public class TrendsPresenter implements TrendsContract.Presenter, LifecycleObser
     public void getData() {
         trendsView.showLoading(true);
         disposeBag.add(dataRepository.getTrends()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(ioScheduler)
+                .observeOn(uiScheduler)
                 .subscribe(this::handleReturnedData, this::handleError));
     }
 

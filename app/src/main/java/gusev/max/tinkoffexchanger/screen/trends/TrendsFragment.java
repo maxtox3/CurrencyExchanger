@@ -27,6 +27,8 @@ import butterknife.Unbinder;
 import gusev.max.tinkoffexchanger.R;
 import gusev.max.tinkoffexchanger.data.model.dto.Currency;
 import gusev.max.tinkoffexchanger.data.repository.RepositoryProvider;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class TrendsFragment extends Fragment implements TrendsContract.View {
 
@@ -62,7 +64,7 @@ public class TrendsFragment extends Fragment implements TrendsContract.View {
 
         setupWidgets();
 
-        presenter = new TrendsPresenter(this, RepositoryProvider.provideRepository());
+        presenter = new TrendsPresenter(this, RepositoryProvider.provideRepository(), Schedulers.io(), AndroidSchedulers.mainThread());
 
         return view;
     }

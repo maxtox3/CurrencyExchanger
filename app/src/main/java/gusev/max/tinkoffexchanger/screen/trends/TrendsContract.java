@@ -5,7 +5,7 @@ import java.util.List;
 import gusev.max.tinkoffexchanger.data.model.dto.Currency;
 import gusev.max.tinkoffexchanger.screen.base.BasePresenter;
 
-class TrendsContract {
+public interface TrendsContract {
 
     interface View {
 
